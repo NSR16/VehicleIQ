@@ -14,8 +14,11 @@ __pycache__/
 # Node / Vite
 node_modules/
 frontend/dist/
+backend/scripts/output/
 
 # Test and tooling caches
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+analysis_output/
