@@ -1,5 +1,6 @@
 """Reusable Gemini image-analysis operation."""
 
+from collections.abc import Sequence
 from typing import Any, Protocol
 
 from google.genai import errors, types
@@ -46,14 +47,30 @@ def analyze_image(
     if not prompt.strip():
         raise ValueError("Prompt must not be empty.")
 
+    image_part = types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
+    return analyze_content([prompt, image_part], client=client)
+
+
+def analyze_content(
+    contents: Sequence[str | types.Part],
+    *,
+    client: GeminiClient | None = None,
+) -> ImageAnalysisResponse:
+    """Send text and image parts through the shared Gemini service."""
+    if not contents:
+        raise ValueError("Gemini content must not be empty.")
+    if any(not isinstance(part, (str, types.Part)) for part in contents):
+        raise TypeError("Gemini content parts must be text or google-genai Part values.")
+    if any(isinstance(part, str) and not part.strip() for part in contents):
+        raise ValueError("Gemini text content parts must not be empty.")
+
     active_client = client if client is not None else get_gemini_client()
     model = GEMINI_MODEL
 
     try:
-        image_part = types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
         response = active_client.models.generate_content(
             model=model,
-            contents=[prompt, image_part],
+            contents=list(contents),
         )
     except errors.APIError as exc:
         raise GeminiServiceError("Gemini image analysis request failed.") from exc
