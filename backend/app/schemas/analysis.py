@@ -83,7 +83,9 @@ class DiagnosisMetadata(BaseModel):
     temperature: float = 0.0
     latency_ms: int = Field(ge=0)
     few_shot_examples_used: bool = False
-    prompt_mode: Literal["zero_shot"] = "zero_shot"
+    few_shot_example_count: int = Field(default=0, ge=0)
+    demonstration_ids: list[str] = Field(default_factory=list)
+    prompt_mode: Literal["suitability_only", "ordinary_few_shot", "contrastive_few_shot"] = "suitability_only"
 
 
 class DiagnosisResponse(BaseModel):

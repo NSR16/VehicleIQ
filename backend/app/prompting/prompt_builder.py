@@ -51,7 +51,11 @@ def _validated_image_part(image_bytes: bytes, mime_type: str) -> types.Part:
     return types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
 
 
-def _base_prompt(strategy_framing: str, vehicle: VehicleContext) -> str:
+def _base_prompt(
+    strategy_framing: str, vehicle: VehicleContext, task_prompt: str | None = None
+) -> str:
+    if task_prompt is not None:
+        return f"{strategy_framing}\n\n{task_prompt}"
     symptoms = vehicle.symptoms.strip() if vehicle.symptoms else "Not provided"
     context = COMMON_TASK.format(
         manufacturer=vehicle.manufacturer,
@@ -63,9 +67,11 @@ def _base_prompt(strategy_framing: str, vehicle: VehicleContext) -> str:
 
 
 def _example_text(index: int, example: FewShotExample) -> str:
+    example_id = f" (ID: {example.example_id})" if example.example_id else ""
+    source = f" Source: {example.source_note}." if example.source_note else ""
     return (
-        f"Demonstration {index}: label: {example.label}; "
-        f"meaning: {example.meaning}. Image follows."
+        f"Demonstration {index}{example_id}: label ID: {example.label}; "
+        f"meaning: {example.meaning}.{source} Image follows."
     )
 
 
@@ -85,12 +91,14 @@ def build_ordinary_few_shot_content(
     examples: Sequence[FewShotExample],
     query_image_bytes: bytes,
     query_mime_type: ImageMimeType,
-    vehicle: VehicleContext,
+    vehicle: VehicleContext | None,
+    *,
+    task_prompt: str | None = None,
 ) -> list[str | types.Part]:
     """Construct a request with independent labeled demonstrations."""
     if not examples:
         raise ValueError("At least one few-shot example is required.")
-    parts: list[str | types.Part] = [_base_prompt(ORDINARY_FRAMING, vehicle)]
+    parts: list[str | types.Part] = [_base_prompt(ORDINARY_FRAMING, vehicle, task_prompt)]
     for index, example in enumerate(examples, start=1):
         parts.extend(
             [
@@ -105,22 +113,26 @@ def build_contrastive_few_shot_content(
     pairs: Sequence[ContrastivePair],
     query_image_bytes: bytes,
     query_mime_type: ImageMimeType,
-    vehicle: VehicleContext,
+    vehicle: VehicleContext | None,
+    *,
+    task_prompt: str | None = None,
 ) -> list[str | types.Part]:
     """Construct a request with paired examples and supplied distinctions."""
     if not pairs:
         raise ValueError("At least one contrastive pair is required.")
-    parts: list[str | types.Part] = [_base_prompt(CONTRASTIVE_FRAMING, vehicle)]
+    parts: list[str | types.Part] = [_base_prompt(CONTRASTIVE_FRAMING, vehicle, task_prompt)]
     for pair_number, pair in enumerate(pairs, start=1):
         parts.append(
             f"Pair {pair_number}. Supplied visual distinction: {pair.visual_distinction} "
             f"Supplied semantic difference: {pair.semantic_difference}"
         )
         for side, example in (("A", pair.first), ("B", pair.second)):
+            example_id = f" (ID: {example.example_id})" if example.example_id else ""
+            source = f" Source: {example.source_note}." if example.source_note else ""
             parts.extend(
                 [
-                    f"Pair {pair_number}, example {side}: label: {example.label}; "
-                    f"meaning: {example.meaning}. Image follows.",
+                    f"Pair {pair_number}, example {side}{example_id}: label ID: {example.label}; "
+                    f"meaning: {example.meaning}.{source} Image follows.",
                     _validated_image_part(example.image_bytes, example.mime_type),
                 ]
             )

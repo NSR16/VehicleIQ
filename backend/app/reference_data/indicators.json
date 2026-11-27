@@ -1,5 +1,23 @@
 [
   {
+    "label_id": "rear_cargo_door_open",
+    "display_name": "Rear cargo door or trunk open",
+    "category": "status",
+    "meaning": "The rear cargo door or trunk may not be fully closed.",
+    "severity": "low",
+    "recommended_action": "When safe, check that the rear cargo door or trunk is fully closed and latched; consult the vehicle owner's manual if the warning persists.",
+    "source_note": "Provisional research entry based on vehicle-icon dataset record 249038ec80c400a0 (manufacturer field: Mopar). The record-to-manual, model, and year mapping is unavailable. Severity is a coarse VehicleIQ grouping, not a manufacturer rating; verify against the applicable owner's manual before treating this as vehicle-specific guidance."
+  },
+  {
+    "label_id": "hood_open",
+    "display_name": "Hood open",
+    "category": "status",
+    "meaning": "The hood may not be fully closed.",
+    "severity": "low",
+    "recommended_action": "When safe, check that the hood is fully closed and latched before driving; consult the vehicle owner's manual if the warning persists.",
+    "source_note": "Provisional research entry based on vehicle-icon dataset record 8412b8cc80c400a0 (manufacturer field: Mopar). The record-to-manual, model, and year mapping is unavailable. Severity is a coarse VehicleIQ grouping, not a manufacturer rating; verify against the applicable owner's manual before treating this as vehicle-specific guidance."
+  },
+  {
     "label_id": "oil_pressure",
     "display_name": "Low engine oil pressure",
     "category": "warning",

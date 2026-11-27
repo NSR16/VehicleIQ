@@ -20,6 +20,8 @@ class FewShotExample(BaseModel):
     mime_type: ImageMimeType
     label: str
     meaning: str
+    example_id: str | None = None
+    source_note: str | None = None
 
     @field_validator("image_bytes")
     @classmethod

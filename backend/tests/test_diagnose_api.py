@@ -13,6 +13,7 @@ from PIL import Image
 from app.main import app
 from app.errors import ConfigurationError
 from app.reference import IndicatorReference, load_catalogue
+from app.prompting.demo_data import demo_example_ids, load_demo_pairs
 
 def image_bytes(format_name):
     buffer = BytesIO()
@@ -57,8 +58,13 @@ class DiagnosisApiTests(unittest.TestCase):
                 body = response.json()
                 self.assertEqual(body["indicator"]["meaning"], load_catalogue()["oil_pressure"].meaning)
                 self.assertEqual(body["metadata"]["strategy"], strategy)
-                self.assertFalse(body["metadata"]["few_shot_examples_used"])
-                self.assertEqual(body["metadata"]["prompt_mode"], "zero_shot")
+                self.assertTrue(body["metadata"]["few_shot_examples_used"])
+                self.assertEqual(body["metadata"]["few_shot_example_count"], 4)
+                self.assertEqual(body["metadata"]["prompt_mode"], f"{strategy}_few_shot")
+                self.assertEqual(body["metadata"]["demonstration_ids"], [
+                    "mopar_rear_cargo_door_open", "mopar_hood_open",
+                    "volvo_brake_system_warning", "volvo_abs_warning",
+                ])
                 self.assertEqual(len(fake.calls), 2)
 
     def test_contextual_natural_language_questions_are_accepted_and_passed_to_prompt(self):
@@ -72,22 +78,44 @@ class DiagnosisApiTests(unittest.TestCase):
                 prompt = fake.calls[1]["contents"][0]
                 self.assertIn(question, prompt)
                 self.assertIn('"question":', prompt)
-                self.assertIn("claim the vehicle is safe to drive", prompt)
+                self.assertIn("claims that the vehicle is safe to drive", prompt)
 
-    def test_ordinary_and_contrastive_have_same_zero_shot_identification_prompt(self):
+    def test_strategies_use_same_images_context_schema_and_settings_but_distinct_framing(self):
         assessment = json.dumps({"image_status": "suitable", "reason": "clear"})
         unknown = json.dumps({"status": "unknown", "label_id": None, "confidence": "low", "state": "unknown", "visual_evidence": "ambiguous"})
         prompts = []
         image_parts = []
+        schemas = []
         for strategy in ("ordinary", "contrastive"):
             response, fake = self.post([assessment, unknown], strategy=strategy, manufacturer="Toyota", question="Is this serious?")
             self.assertEqual(response.status_code, 200)
-            prompts.append(fake.calls[1]["contents"][0])
-            image_parts.append(fake.calls[1]["contents"][1].inline_data.data)
+            contents = fake.calls[1]["contents"]
+            prompts.append("\n".join(part for part in contents if isinstance(part, str)))
+            image_parts.append([part.inline_data.data for part in contents if hasattr(part, "inline_data")])
             self.assertEqual(fake.calls[1]["config"].temperature, 0.0)
             self.assertEqual(fake.calls[1]["config"].response_mime_type, "application/json")
-        self.assertEqual(prompts[0], prompts[1])
-        self.assertEqual(image_parts, [PNG, PNG])
+            schemas.append(fake.calls[1]["config"].response_json_schema)
+        self.assertNotEqual(prompts[0], prompts[1])
+        self.assertIn("independent example", prompts[0].lower())
+        self.assertIn("visual distinction", prompts[1].lower())
+        self.assertIn("The open-part marker is at the rear cargo area versus the front hood area", prompts[1])
+        self.assertIn("Is this serious?", prompts[0])
+        self.assertIn('"manufacturer": "Toyota"', prompts[1])
+        self.assertNotIn("Supplied visual distinction", prompts[0])
+        self.assertEqual(image_parts[0], image_parts[1])
+        self.assertEqual(schemas[0], schemas[1])
+        self.assertEqual(len(image_parts[0]), 5)  # Four identical demonstrations plus query image.
+        self.assertEqual(image_parts[0][-1], PNG)
+        expected_demo_images = [
+            example.image_bytes
+            for pair in load_demo_pairs(load_catalogue())
+            for example in (pair.first, pair.second)
+        ]
+        self.assertEqual(image_parts[0][:-1], expected_demo_images)
+        self.assertEqual(demo_example_ids(load_demo_pairs(load_catalogue())), [
+            "mopar_rear_cargo_door_open", "mopar_hood_open",
+            "volvo_brake_system_warning", "volvo_abs_warning",
+        ])
 
     def test_default_strategy_and_invalid_strategy(self):
         with patch.dict("os.environ", {"VEHICLEIQ_DEFAULT_STRATEGY": "contrastive"}):
@@ -168,6 +196,26 @@ class DiagnosisApiTests(unittest.TestCase):
         self.assertEqual(response.json()["image_status"], "suitable")
         self.assertEqual(response.json()["status"], "unknown")
         self.assertEqual(len(fake.calls), 2)
+
+    def test_demo_labels_and_catalogue_information_are_used_authoritatively(self):
+        suitability = json.dumps({"image_status": "suitable", "reason": "clear"})
+        identification = json.dumps({"status": "identified", "label_id": "rear_cargo_door_open", "confidence": "high", "state": "steady", "visual_evidence": "side-profile car with rear-open marker"})
+        response, fake = self.post([suitability, identification], strategy="contrastive")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["indicator"]["label_id"], "rear_cargo_door_open")
+        self.assertEqual(body["indicator"]["meaning"], load_catalogue()["rear_cargo_door_open"].meaning)
+        self.assertEqual(body["indicator"]["recommended_action"], load_catalogue()["rear_cargo_door_open"].recommended_action)
+        text = "\n".join(part for part in fake.calls[1]["contents"] if isinstance(part, str))
+        self.assertIn("rear_cargo_door_open", text)
+        self.assertIn("hood_open", text)
+        self.assertIn("mopar_rear_cargo_door_open", text)
+
+    def test_missing_demo_file_fails_explicitly(self):
+        from app.prompting import demo_data
+        with patch.object(demo_data, "DEMO_IMAGE_DIR", Path("missing-demo-directory")):
+            with self.assertRaises(ConfigurationError):
+                demo_data.load_demo_pairs(load_catalogue())
 
     def test_provider_failure_and_malformed_output_are_502(self):
         failed, _ = self.post([RuntimeError("provider")])
