@@ -15,6 +15,15 @@ __pycache__/
 node_modules/
 frontend/dist/
 backend/scripts/output/
+results/research_evaluation/
+backend/results/research_evaluation/*.jsonl
+backend/results/research_evaluation/*.config.json
+backend/results/research_evaluation/*.summary.md
+
+results/research_evaluation/
+
+# Test and tooling caches
+.pytest_cache/
 
 # Test and tooling caches
 .pytest_cache/

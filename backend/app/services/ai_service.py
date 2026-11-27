@@ -1,6 +1,9 @@
 """Reusable Gemini image-analysis operation."""
 
 from collections.abc import Sequence
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+import math
 from typing import Any, Protocol
 
 from google.genai import errors, types
@@ -27,6 +30,29 @@ class GeminiModelsClient(Protocol):
 
 class GeminiClient(Protocol):
     models: GeminiModelsClient
+
+
+def _retry_after_seconds(response: Any) -> float | None:
+    headers = getattr(response, "headers", None)
+    if headers is None:
+        return None
+    try:
+        value = headers.get("Retry-After") or headers.get("retry-after")
+    except Exception:
+        return None
+    if value is None:
+        return None
+    try:
+        seconds = float(value)
+        return max(0.0, seconds) if math.isfinite(seconds) else None
+    except (TypeError, ValueError):
+        try:
+            retry_at = parsedate_to_datetime(str(value))
+            if retry_at.tzinfo is None:
+                retry_at = retry_at.replace(tzinfo=timezone.utc)
+            return max(0.0, (retry_at - datetime.now(timezone.utc)).total_seconds())
+        except (TypeError, ValueError, OverflowError):
+            return None
 
 
 def analyze_image(
@@ -75,11 +101,39 @@ def analyze_content(
             config=config or types.GenerateContentConfig(temperature=0.0),
         )
     except errors.APIError as exc:
-        raise GeminiServiceError("Gemini image analysis request failed.") from exc
+        raise GeminiServiceError(
+            "Gemini image analysis request failed.",
+            status_code=getattr(exc, "code", None),
+            provider_status=getattr(exc, "status", None),
+            provider_message=getattr(exc, "message", None),
+            provider_details=getattr(exc, "details", None),
+            retry_after_seconds=_retry_after_seconds(getattr(exc, "response", None)),
+            retryable=(getattr(exc, "code", None) in {408, 500, 502, 503, 504}),
+        ) from exc
     except Exception as exc:
-        raise GeminiServiceError("Gemini image analysis could not be completed.") from exc
+        transient_names = ("Timeout", "ConnectError", "NetworkError", "RemoteProtocolError")
+        retryable = isinstance(exc, (TimeoutError, ConnectionError)) or type(exc).__name__.endswith(transient_names)
+        raise GeminiServiceError(
+            "Gemini image analysis could not be completed.", retryable=retryable
+        ) from exc
 
     text = getattr(response, "text", None)
     if not isinstance(text, str) or not text.strip():
         raise GeminiServiceError("Gemini returned an empty analysis response.")
-    return ImageAnalysisResponse(text=text, model=model)
+    usage = getattr(response, "usage_metadata", None)
+    if usage is not None and hasattr(usage, "model_dump"):
+        usage_data = usage.model_dump(exclude_none=True)
+    elif usage is not None and hasattr(usage, "__dict__"):
+        usage_data = vars(usage)
+    else:
+        usage_data = {}
+    allowed_usage = {
+        key: value
+        for key, value in usage_data.items()
+        if isinstance(key, str) and isinstance(value, int) and not isinstance(value, bool)
+    }
+    return ImageAnalysisResponse(
+        text=text,
+        model=model,
+        usage_metadata=allowed_usage or None,
+    )

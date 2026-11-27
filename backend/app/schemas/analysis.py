@@ -35,6 +35,7 @@ class ImageAnalysisResponse(BaseModel):
 
     text: str
     model: str
+    usage_metadata: dict[str, int] | None = None
 
 
 class Strategy(str, Enum):

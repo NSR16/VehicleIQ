@@ -1,0 +1,317 @@
+{
+  "run_config_id": "fce47c4e6235163ab205dcdcb8c03dd4a9f2fe03816ae8185d3593b9ab8d5f11",
+  "created_at": "2026-11-27T17:58:38.998Z",
+  "settings": {
+    "model": "gemini-3.5-flash-lite",
+    "prompt_version": "1.0",
+    "temperature": 0.0,
+    "response_mime_type": "application/json",
+    "response_schema": {
+      "$defs": {
+        "ModelClarificationQuestion": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "maxLength": 80,
+              "minLength": 1,
+              "title": "Id",
+              "type": "string"
+            },
+            "question": {
+              "maxLength": 300,
+              "minLength": 1,
+              "title": "Question",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "question"
+          ],
+          "title": "ModelClarificationQuestion",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "identified",
+            "unknown",
+            "needs_clarification"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "label_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label Id"
+        },
+        "confidence": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "visible_colour": {
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visible Colour"
+        },
+        "state": {
+          "enum": [
+            "steady",
+            "flashing",
+            "unknown"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "visual_evidence": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Visual Evidence",
+          "type": "string"
+        },
+        "clarification_questions": {
+          "items": {
+            "$ref": "#/$defs/ModelClarificationQuestion"
+          },
+          "title": "Clarification Questions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "confidence",
+        "state",
+        "visual_evidence"
+      ],
+      "title": "Identification",
+      "type": "object"
+    },
+    "response_schema_sha256": "9b25be65f1646661f899a5731379b1e47da47c3a8b530277a3d0f1db214662b6",
+    "question": "Identify the dashboard indicator shown in the image.",
+    "strategies": [
+      "ordinary",
+      "contrastive"
+    ],
+    "demonstrations_in_order": [
+      {
+        "example_id": "mopar_rear_cargo_door_open",
+        "sha256": "6d5bfefb03c966e30b05642f4fde87d3b064167cb38a1a1380b352aab19483b4",
+        "mime_type": "image/png",
+        "label_id": "rear_cargo_door_open",
+        "meaning": "The rear cargo door or trunk may not be fully closed."
+      },
+      {
+        "example_id": "mopar_hood_open",
+        "sha256": "048ad780392c5ecbc867bed141e4fac77835b43d38e70dfe6c86e98428726c4c",
+        "mime_type": "image/png",
+        "label_id": "hood_open",
+        "meaning": "The hood may not be fully closed."
+      },
+      {
+        "example_id": "volvo_brake_system_warning",
+        "sha256": "305117cfced2c6943cf5d04e5c8a3ef566457b98cf3e0e3c95f7bf1e078eb22a",
+        "mime_type": "image/png",
+        "label_id": "brake_system",
+        "meaning": "Indicates a brake-system warning; exact meaning depends on the vehicle and accompanying messages."
+      },
+      {
+        "example_id": "volvo_abs_warning",
+        "sha256": "d6b97c5f4efb5a191a08bf7c1c608cc1b5eba5cc607e282e655ae5c72352f67b",
+        "mime_type": "image/png",
+        "label_id": "abs",
+        "meaning": "Indicates an ABS system warning; conventional braking behavior and implications vary by vehicle."
+      }
+    ],
+    "contrastive_pair_notes": [
+      {
+        "first_example_id": "mopar_rear_cargo_door_open",
+        "second_example_id": "mopar_hood_open",
+        "visual_distinction": "The open-part marker is at the rear cargo area versus the front hood area of the side-profile car.",
+        "semantic_difference": "The first indicates a rear cargo door/trunk not closed; the second indicates the hood not closed."
+      },
+      {
+        "first_example_id": "volvo_brake_system_warning",
+        "second_example_id": "volvo_abs_warning",
+        "visual_distinction": "Both show an amber circled symbol between curved brackets; the center is an exclamation mark versus the letters ABS.",
+        "semantic_difference": "The first is a general brake-system warning; the second specifically indicates an anti-lock braking system warning."
+      }
+    ],
+    "manifest_sha256": "56e7c87ec9b0c8c3fa73fce185c7a22b84015fe3a52cbfe5957bd091dcc1d374",
+    "query_records": [
+      {
+        "record_id": "13e88eb2b28ee833",
+        "image_sha256": "21a7b2bebc18098fdb4f78b8a349b026c0ff4d444ef79ce65594fa1b230ac726",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "abs"
+      },
+      {
+        "record_id": "40c4e4cc69c09a88",
+        "image_sha256": "85467dc7f7459e25c206ef60ff72ce15a93bdf59d141e8bdd4abe79573de8969",
+        "manufacturer": "Volvo",
+        "ground_truth_catalogue_id": "airbag_srs"
+      },
+      {
+        "record_id": "03cccccc8696d401",
+        "image_sha256": "766bfa923dc6f89c71a357fd05ed6ea35c41c577a4458dcb0aa91dffc7c8493c",
+        "manufacturer": "JLR",
+        "ground_truth_catalogue_id": "battery_charging"
+      },
+      {
+        "record_id": "32ce96969696cc32",
+        "image_sha256": "5ff4de2b6c0b93792e2526f0fba7860e7ce9cd1c469c5f745b85743f66e4f3f4",
+        "manufacturer": "Mazda",
+        "ground_truth_catalogue_id": "brake_system"
+      },
+      {
+        "record_id": "36b1b171b0d4f0d4",
+        "image_sha256": "124940397acf1eed688ecff2bd2aaec17f600ab86db527f6608602bf987f6cea",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "coolant_temperature"
+      },
+      {
+        "record_id": "904bb4ca2b8ed423",
+        "image_sha256": "42cbcca8bb962099fe11679bc04d8c8b0668e9074eea412acc479bfab252e067",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "hood_open"
+      },
+      {
+        "record_id": "6370de86b3c66e39",
+        "image_sha256": "ef0915eff3a3d5f826b90c4e93b970a9a4e5075c5933fbc0b6cade77417eb255",
+        "manufacturer": "Mazda",
+        "ground_truth_catalogue_id": "malfunction_indicator"
+      },
+      {
+        "record_id": "20007686128c0084",
+        "image_sha256": "5c16660eaf22d135175b0be58adc10ec357307b3d79ed86bb1ab0e807a97b5f1",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "rear_cargo_door_open"
+      },
+      {
+        "record_id": "33cc9eb2a69ecc32",
+        "image_sha256": "e003b43fd278e7b07ffa87be4ddd094ca97ceb12cd5bb1d5975f81245569b956",
+        "manufacturer": "Mazda",
+        "ground_truth_catalogue_id": "abs"
+      },
+      {
+        "record_id": "62616060e9726848",
+        "image_sha256": "29081f129c5a1e2458973ffda1d06300e0a7d95a90aecb992b3371489dbdc63b",
+        "manufacturer": "JLR",
+        "ground_truth_catalogue_id": "airbag_srs"
+      },
+      {
+        "record_id": "000006d0d8260000",
+        "image_sha256": "3a4af65ad67d66d775499755fed7728e722bc807520f52c560d909f6d177f7f1",
+        "manufacturer": "Volvo",
+        "ground_truth_catalogue_id": "brake_system"
+      },
+      {
+        "record_id": "3731313150d4704c",
+        "image_sha256": "9aa3a39eefaff2df81e9e04f07d508ea23352d141fc9d978a4c827d44648bb10",
+        "manufacturer": "Mazda",
+        "ground_truth_catalogue_id": "coolant_temperature"
+      },
+      {
+        "record_id": "b000b4829acc0084",
+        "image_sha256": "bab72a23cde2f41fb75b942f9a19c449d5277943e408b2400d16f10e4a85720e",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "hood_open"
+      },
+      {
+        "record_id": "0c73e00e31c66491",
+        "image_sha256": "b0a0e02fbb8db131bc83c4d5f69a4f31fd9184327162a759b37fa6749b63203a",
+        "manufacturer": "Volvo",
+        "ground_truth_catalogue_id": "malfunction_indicator"
+      },
+      {
+        "record_id": "204c21a6dcc96205",
+        "image_sha256": "d747b5ffa6d1a1081c5790b95c2788294267ffe0913b6e1a6cf04bc1a902e531",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "oil_pressure"
+      },
+      {
+        "record_id": "200770c636980b80",
+        "image_sha256": "50e44f5cff4eba3699dc69ddec890e7740ccf92f96c51dccc70e8b590cc360ad",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "rear_cargo_door_open"
+      },
+      {
+        "record_id": "3030b0b270683230",
+        "image_sha256": "f0f6247e708e8604c3d2947cf4a186e26afa578f7fd15b93b08436102b9f4d8a",
+        "manufacturer": "JLR",
+        "ground_truth_catalogue_id": "seat_belt"
+      },
+      {
+        "record_id": "cc94b23333b294e0",
+        "image_sha256": "59a12321f32883797cce9a287cc7c5b7d2ea8d714b27b147e45bf2dad651f7b1",
+        "manufacturer": "Mopar",
+        "ground_truth_catalogue_id": "tire_pressure"
+      },
+      {
+        "record_id": "b28e962a6a948eb2",
+        "image_sha256": "568317d9f3b5b8a43d17d1e2bb077e3e0ed4c2780fbc38f7859297efb466b169",
+        "manufacturer": "Mazda",
+        "ground_truth_catalogue_id": "abs"
+      },
+      {
+        "record_id": "1265646869d29a64",
+        "image_sha256": "c796c9848f92af4f08f3f4e74d6fad6dab160b9d8caa7c3894bd2d9a91d72ddf",
+        "manufacturer": "Volvo",
+        "ground_truth_catalogue_id": "airbag_srs"
+      },
+      {
+        "record_id": "0519386468694131",
+        "image_sha256": "f9ca6b4309915e6507b7829bfe070237fe9b39e6b0b34455e0fb1880501af15f",
+        "manufacturer": "Mazda",
+        "ground_truth_catalogue_id": "battery_charging"
+      },
+      {
+        "record_id": "0001d6d490aa0088",
+        "image_sha256": "83186309d5f05111af1f94e365d7762610e9e00aa4b20e3adf99a1a0fe0d8db7",
+        "manufacturer": "JLR",
+        "ground_truth_catalogue_id": "brake_system"
+      },
+      {
+        "record_id": "8d63e00e31c66891",
+        "image_sha256": "b61de452b9d6e5191fbea459515872ea1303421c6e6c19414f94e0c1f1629339",
+        "manufacturer": "Volvo",
+        "ground_truth_catalogue_id": "malfunction_indicator"
+      }
+    ],
+    "requested_delay_seconds": 4.0,
+    "effective_minimum_request_start_interval_seconds": 6.0,
+    "maximum_target_requests_per_minute": 10.0,
+    "max_transient_retries": 2,
+    "max_rate_limit_retries": 3,
+    "backoff_base_seconds": 6,
+    "backoff_jitter_max_seconds": 2,
+    "retry_after_header": "Retry-After",
+    "expected_protocol_records": 23,
+    "expected_catalogue_classes": 11,
+    "runtime_excluded_record_ids": [
+      "02c8d4d6c2d4d802"
+    ]
+  }
+}

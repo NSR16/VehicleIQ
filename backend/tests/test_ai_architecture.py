@@ -101,6 +101,33 @@ class ImageAnalysisTests(unittest.TestCase):
         self.assertNotIn("private provider detail", str(raised.exception))
         self.client.models.generate_content.assert_called_once()
 
+    def test_preserves_http_status_for_quota_stop_and_collects_token_counts(self) -> None:
+        self.client.models.generate_content.side_effect = errors.APIError(
+            code=429,
+            response_json={"error": {"message": "private quota detail"}},
+        )
+        with self.assertRaises(GeminiServiceError) as raised:
+            analyze_image(b"fake-bytes", "image/png", client=self.client)
+        self.assertEqual(raised.exception.status_code, 429)
+
+        self.client.models.generate_content.side_effect = None
+        self.client.models.generate_content.return_value = SimpleNamespace(
+            text="response",
+            usage_metadata=SimpleNamespace(prompt_token_count=12, candidates_token_count=3, note="ignored"),
+        )
+        result = analyze_image(b"fake-bytes", "image/png", client=self.client)
+        self.assertEqual(result.usage_metadata, {"prompt_token_count": 12, "candidates_token_count": 3})
+
+    def test_preserves_retry_after_header(self) -> None:
+        self.client.models.generate_content.side_effect = errors.APIError(
+            code=429,
+            response_json={"error": {"message": "rate limited", "status": "RESOURCE_EXHAUSTED"}},
+            response=SimpleNamespace(headers={"Retry-After": "17"}),
+        )
+        with self.assertRaises(GeminiServiceError) as raised:
+            analyze_image(b"fake-bytes", "image/png", client=self.client)
+        self.assertEqual(raised.exception.retry_after_seconds, 17.0)
+
     def test_rejects_empty_model_response(self) -> None:
         self.client.models.generate_content.return_value = SimpleNamespace(text="  ")
         with self.assertRaises(GeminiServiceError):
