@@ -1,0 +1,137 @@
+[
+  {
+    "label_id": "oil_pressure",
+    "display_name": "Low engine oil pressure",
+    "category": "warning",
+    "meaning": "The oil pressure is below the expected operating level; this does not identify the underlying cause.",
+    "severity": "high",
+    "recommended_action": "Safely stop as soon as possible and switch off the engine; consult the owner's manual and seek qualified assistance.",
+    "source_note": "Toyota official warning light reference (low engine oil pressure meaning; consult vehicle manual for model-specific action): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "brake_system",
+    "display_name": "Brake system warning",
+    "category": "warning",
+    "meaning": "Indicates a brake-system warning; exact meaning depends on the vehicle and accompanying messages.",
+    "severity": "high",
+    "recommended_action": "Follow the vehicle owner's manual. If braking feels abnormal or the warning remains on, stop safely and seek professional assistance.",
+    "source_note": "Toyota 2024 Highlander Owner's Manual, warning lights and actions (red brake warning includes stop safely and contact dealer; other variants depend on the message): https://www.toyota.com/owners/warranty-owners-manuals/digital/article/highlander/2024/om0e194u/ch07se020404 Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "coolant_temperature",
+    "display_name": "High coolant temperature",
+    "category": "warning",
+    "meaning": "The engine coolant temperature is higher than the normal range.",
+    "severity": "high",
+    "recommended_action": "Safely stop and switch off the vehicle as directed by its owner's manual; seek assistance if the warning persists.",
+    "source_note": "Toyota official warning light reference (high coolant temperature meaning and stop guidance): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "battery_charging",
+    "display_name": "Charging system warning",
+    "category": "warning",
+    "meaning": "The vehicle's charging system requires attention; the symbol alone does not establish the failed component.",
+    "severity": "high",
+    "recommended_action": "Follow the owner's manual and arrange prompt professional inspection; avoid relying on continued driving if the warning persists.",
+    "source_note": "Toyota official warning light reference (charging system warning meaning): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "abs",
+    "display_name": "Anti-lock braking system (ABS) warning",
+    "category": "warning",
+    "meaning": "Indicates an ABS system warning; conventional braking behavior and implications vary by vehicle.",
+    "severity": "medium",
+    "recommended_action": "Consult the owner's manual and have the system inspected promptly; drive cautiously and stop if braking is abnormal.",
+    "source_note": "Toyota official warning light reference (ABS warning meaning): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "tire_pressure",
+    "display_name": "Low tire pressure (TPMS)",
+    "category": "warning",
+    "meaning": "The tire pressure monitoring system indicates low pressure or a system condition; check the manual for the specific signal.",
+    "severity": "medium",
+    "recommended_action": "Check all tire pressures when safe and adjust to the vehicle placard/manual specification; inspect for damage.",
+    "source_note": "Toyota official warning light reference (low tire pressure/system warning meaning): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "malfunction_indicator",
+    "display_name": "Malfunction indicator lamp (check engine)",
+    "category": "warning",
+    "meaning": "Indicates a detected engine/emissions system condition; it does not identify a specific fault.",
+    "severity": "medium",
+    "recommended_action": "Consult the owner's manual and arrange diagnosis. Follow the manual's urgent instructions if the lamp flashes or other symptoms occur.",
+    "source_note": "Toyota 2021 RAV4 Owner's Manual, Warning lights and indicators (malfunction indicator lamp): https://www.toyota.com/owners/warranty-owners-manuals/digital/article/rav4/2021/om0r028u/ch02se010401 Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "airbag_srs",
+    "display_name": "SRS airbag warning",
+    "category": "warning",
+    "meaning": "Indicates a supplemental restraint system warning that may affect airbag or restraint operation.",
+    "severity": "high",
+    "recommended_action": "Consult the owner's manual and arrange prompt inspection by a qualified technician.",
+    "source_note": "Toyota official warning light reference (SRS warning meaning): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "seat_belt",
+    "display_name": "Seat belt reminder",
+    "category": "warning",
+    "meaning": "A seat belt reminder is active for a seat; exact behavior varies by vehicle.",
+    "severity": "low",
+    "recommended_action": "Ensure occupants are properly wearing seat belts and check the owner's manual if the reminder persists when seats are unoccupied.",
+    "source_note": "Toyota official warning light reference (seatbelt reminder meaning): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "low_fuel",
+    "display_name": "Low fuel level",
+    "category": "warning",
+    "meaning": "Fuel level is low according to the vehicle's fuel-level system.",
+    "severity": "low",
+    "recommended_action": "Refuel at a convenient safe opportunity; refer to the owner's manual for vehicle-specific range information.",
+    "source_note": "Toyota official warning light reference (low fuel meaning and refuel action): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "turn_signal",
+    "display_name": "Turn signal indicator",
+    "category": "status",
+    "meaning": "Indicates that a turn signal or hazard signal is operating.",
+    "severity": "informational",
+    "recommended_action": "No action is normally needed; if it flashes unusually quickly or stays lit, consult the owner's manual and check the signal lamps.",
+    "source_note": "Toyota official warning light reference (turn signal indicator meaning): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "high_beam",
+    "display_name": "Headlight high beam indicator",
+    "category": "status",
+    "meaning": "Indicates that the high beam headlights are switched on.",
+    "severity": "informational",
+    "recommended_action": "Use high beams only when appropriate and switch to low beams when required by traffic and conditions.",
+    "source_note": "Toyota 2021 RAV4 Owner's Manual, Warning lights and indicators (headlight high beam indicator): https://www.toyota.com/owners/warranty-owners-manuals/digital/article/rav4/2021/om0r028u/ch02se010401 Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "parking_brake",
+    "display_name": "Parking brake indicator",
+    "category": "status",
+    "meaning": "Indicates that the parking brake is applied or a related brake status is active, depending on vehicle design.",
+    "severity": "low",
+    "recommended_action": "Release the parking brake before driving; if the indicator remains on, consult the owner's manual.",
+    "source_note": "Toyota 2024 Highlander Owner's Manual, warning lights and actions (parking brake indicator): https://www.toyota.com/owners/warranty-owners-manuals/digital/article/highlander/2024/om0e194u/ch07se020404 Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "cruise_control",
+    "display_name": "Cruise control indicator",
+    "category": "status",
+    "meaning": "Indicates that cruise control is enabled or active; exact state depends on the vehicle display.",
+    "severity": "informational",
+    "recommended_action": "No action is normally needed; use the owner's manual for the vehicle's control and cancellation behavior.",
+    "source_note": "Toyota official warning light reference (cruise control indicator meaning): https://www.toyota.com/owners/warning-lights Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  },
+  {
+    "label_id": "low_coolant_temp",
+    "display_name": "Low coolant temperature indicator",
+    "category": "informational",
+    "meaning": "Indicates that engine coolant is below its normal operating temperature on vehicles equipped with this indicator.",
+    "severity": "informational",
+    "recommended_action": "No action is normally needed; follow the owner's manual and avoid high engine load until warmed if it advises so.",
+    "source_note": "Toyota Owner's Manual, instrument-panel indicator list (blue low coolant temperature indicator): https://assets.sia.toyota.com/publications/en/om-s/OM47419U/pdf/OM47419U.pdf Severity is VehicleIQ's coarse grouping, not a Toyota rating; action text is general and the vehicle-specific owner's manual takes precedence."
+  }
+]

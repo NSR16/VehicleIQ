@@ -55,6 +55,7 @@ def analyze_content(
     contents: Sequence[str | types.Part],
     *,
     client: GeminiClient | None = None,
+    config: types.GenerateContentConfig | None = None,
 ) -> ImageAnalysisResponse:
     """Send text and image parts through the shared Gemini service."""
     if not contents:
@@ -71,6 +72,7 @@ def analyze_content(
         response = active_client.models.generate_content(
             model=model,
             contents=list(contents),
+            config=config or types.GenerateContentConfig(temperature=0.0),
         )
     except errors.APIError as exc:
         raise GeminiServiceError("Gemini image analysis request failed.") from exc

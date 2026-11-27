@@ -1,6 +1,6 @@
 # VehicleIQ
 
-VehicleIQ is an initial project skeleton for **An Intelligent Vehicle Warning Diagnosis System Using Contrastive Few-Shot Prompting**. The repository contains a React + TypeScript + Vite frontend and a minimal FastAPI backend. AI integration and persistence are reserved for later work.
+VehicleIQ is a college research project for **An Intelligent Vehicle Warning Diagnosis System Using Contrastive Few-Shot Prompting**. It contains a React + TypeScript + Vite frontend and a FastAPI backend.
 
 ## Requirements
 
@@ -18,7 +18,22 @@ python -m pip install -r backend/requirements.txt
 python -m uvicorn app.main:app --reload --app-dir backend
 ```
 
-The health endpoint is available at <http://127.0.0.1:8000/health> and returns `{"status":"ok"}`.
+The health endpoint is available at <http://127.0.0.1:8000/health> and returns `{"status":"ok"}`. The diagnosis endpoint is `POST /api/v1/diagnose` and accepts multipart form data:
+
+| Field | Required | Format |
+| --- | --- | --- |
+| `image` | Yes | PNG, JPEG, or WebP, up to 10 MB |
+| `manufacturer`, `model` | No | Text context |
+| `year` | No | Integer from 1886 to 2100 |
+| `question` | No | Question about a dashboard indicator |
+| `strategy` | No | `ordinary` or `contrastive`; default `ordinary` |
+| `answers` | No | JSON object of clarification IDs to text answers |
+
+Set `VEHICLEIQ_DEFAULT_STRATEGY=ordinary` or `contrastive` to configure the default. A successful response includes a catalogue-backed `indicator`; abstentions return `indicator: null`. Each response also includes `status`, `image_status`, a safety disclaimer, and strategy/model/prompt/latency metadata. Uploaded image bytes are processed in memory and are not persisted.
+
+The backend performs an image suitability assessment before indicator identification. The two stages request JSON from Gemini and validate it with Pydantic. Indicator meanings and recommended actions are taken from the local validated catalogue at `backend/app/reference_data/indicators.json`.
+
+The few-shot dataset is not populated yet. Until actual demonstrations are configured, the API explicitly reports `prompt_mode: "zero_shot"` and `few_shot_examples_used: false`; selecting `ordinary` or `contrastive` is recorded as requested metadata and does not currently change the identification prompt.
 
 ## Run the frontend
 

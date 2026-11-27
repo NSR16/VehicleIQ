@@ -2,3 +2,5 @@ fastapi
 uvicorn[standard]
 google-genai>=1.0.0
 python-dotenv>=1.0.0
+python-multipart>=0.0.9
+Pillow>=10.0.0
